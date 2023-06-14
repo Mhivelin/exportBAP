@@ -150,7 +150,6 @@ class ZeenDoc
         $result = $result['Collections'];
 
         $indexBAP = array();
-
         foreach ($result as $classeur) {
             foreach ($classeur['Index'] as $index) {
                 if ($index['Label'] == 'BAP') {
@@ -167,6 +166,44 @@ class ZeenDoc
 
 
         return $indexBAP;
+    }
+
+    public function getNbBAPDoc($collId, $indexCustom)
+
+    {
+        // fonction qui permet de récupérer le nombre de document BAP à exporter
+        $indexList = array(
+            array(
+                'Id' => 1,
+                'Label' => $indexCustom,
+                'Value' => 1
+            )
+        );
+
+
+
+        // Appel de la méthode 'getNbDoc' du service SOAP
+        $result = $this->client->__soapCall(
+            'getNbDoc',
+            array(
+                'Coll_Id' => $collId,                                           // Identifiant de la collection
+                'IndexList' => $indexList,                                      // recherche sur l'index BAP
+                'StrictMode' => new SoapParam('', 'StrictMode'),                // Mode strict désactivé
+                'Fuzzy' => new SoapParam('', 'Fuzzy'),                          // Recherche floue désactivée
+                'Order_Col' => new SoapParam('', 'Order_Col'),                  // Aucune colonne de tri spécifiée
+                'Order' => new SoapParam('', 'Order'),                          // Ordre de tri par défaut
+                'Saved_Query_Id' => new SoapParam(240, 'Saved_Query_Id'),       // Identifiant de la requête sauvegardée non spécifié
+                'Query_Operator' => new SoapParam('', 'Query_Operator')         // Opérateur de requête par défaut
+            )
+        );
+
+
+        if (isset($result->Error_Msg)) {
+            echo "<div class='alert alert-danger' role='alert'>Erreur : " . $result->Error_Msg . "</div>";
+        } else {
+            $result = json_decode($result, true);
+            return $result;
+        }
     }
 
 
@@ -212,8 +249,7 @@ class ZeenDoc
 
         $collId = '';
         $indexList = array();
-        //Code journal;Date;N° de compte;Compte auxiliaire;Pièce;Document;Libellé;Débit;Crédit;Date de l'échéance;Moyen de paiement;N° de ligne pour les documents associés;Documents associés;N° de ligne pour les ventilations analytiques;Plan analytique;Poste analytique;Montant de la ventilation analytique;Notes;Intitulé du compte;Information libre 1;
-        $wantedColumns = 'custom_t4';
+        $wantedColumns = 'filename';
 
         // Appeler la méthode searchDoc avec les paramètres de recherche
         return $this->searchDoc($collId, $indexList, $wantedColumns);
@@ -283,12 +319,8 @@ class ZeenDoc
         return $this->updateDoc($collId, $resId, $indexList);
     }
 
-    public function changeAllBAP()
+    public function changeAllBAP($collList)
     {
-        $collList = $this->getClassList();
-
-        $collList = array_filter($collList);
-
 
         foreach ($collList as $coll) {
             try {
