@@ -55,6 +55,7 @@ class ZeenDoc
             if (isset($result->Error_Msg)) {
                 echo "<div class='alert alert-danger' role='alert'>Erreur : " . $result->Error_Msg . "</div>";
             } else {
+                return $result;
             }
         } catch (SoapFault $fault) {
             return $fault;
@@ -99,7 +100,7 @@ class ZeenDoc
      * @param string $Wanted_Columns - Colonnes souhaitées
      * @return mixed - Résultat de la requête ou une exception SoapFault en cas d'erreur
      */
-    public function getDocument($collId, $resId, $Wanted_Columns = 'filename')
+    private function getDocument($collId, $resId, $Wanted_Columns = 'filename')
     {
 
         // fonction qui permet de récupérer les documents d'une collection
@@ -124,7 +125,7 @@ class ZeenDoc
         }
     }
 
-    public function getRights()
+    private function getRights()
     {
         // fonction qui permet de récupérer toutes les informations de l'utilisateur connecté
         $result = $this->client->__soapCall(
@@ -143,15 +144,6 @@ class ZeenDoc
         }
     }
 
-    public function getInfoPerso()
-    {
-        //fonction qui permet de récupérer les informations de l'utilisateur connecté
-        $result = $this->getRights();
-
-        $infosUser = $result['User'];
-
-        return $infosUser;
-    }
 
     public function getClassList()
     {

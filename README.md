@@ -5,9 +5,9 @@ export de BAP de Zeendoc vers ebp
 
 ```mermaid
 graph TD;
-   A-->B;
-   B-->C;
-   C-->D;
+   A[BAP]-->B(l'utilisateur existe-t-il dans la base de données ?);
+   B-->|oui|C[export des BAP]
+   B-->|non|D[ajout de l'utilisateur dans la base de données]
 ```
 
 
