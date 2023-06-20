@@ -24,12 +24,12 @@ graph TD;
 ```mermaid
 sequenceDiagram
 
-box grey local
+box local
 participant API
 participant BDD
 end
 
-box grey WebService
+box WebService
 participant Zeendoc
 participant EBP
 end
