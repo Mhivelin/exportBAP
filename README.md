@@ -37,14 +37,22 @@ end
 
 
 API->>BDD: recuperer données de connexion
+activate BDD
 BDD->>API: données de connexion
+deactivate BDD
 API->>Zeendoc: connexion
 API->>Zeendoc: récupérer les classeurs
+activate Zeendoc
 Zeendoc->>API: classeurs
+deactivate Zeendoc
 API->>Zeendoc: récupérer des documents
+activate Zeendoc
 Zeendoc->>API: documents
+deactivate Zeendoc
 API->>EBP: envoyer les données
+activate EBP
 EBP->>API: confirmation de l'envoi
+deactivate EBP
 API->>Zeendoc: confirmer l'export
 
 ```
