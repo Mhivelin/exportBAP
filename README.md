@@ -6,8 +6,14 @@ export de BAP de Zeendoc vers ebp
 ```mermaid
 graph TD;
    A[BAP]-->B(l'utilisateur existe-t-il dans la base de données ?);
-   B-->|oui|C[export des BAP]
-   B-->|non|D[ajout de l'utilisateur dans la base de données]
+   B-->|oui|C[passer l'index BAP à 'OK'];
+   B-->|non|D[ajout de l'utilisateur sur le site web];
+   C-->| zeendoc |E[bouton d'export]
+   C-->| site web |F[bouton d'export]
+   D-->C
+   E-->G[execution de declanchement.php]
+   F-->G
+
 ```
 
 
