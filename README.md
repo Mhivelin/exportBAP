@@ -14,7 +14,7 @@ graph TD;
    E-->G[execution de declanchement.php];
    F-->G;
 
-   
+
 
 ```
 <br>
@@ -23,6 +23,19 @@ graph TD;
 
 ```mermaid
 sequenceDiagram
+
+box grey local
+participant API
+participant BDD
+end
+
+box grey WebService
+participant Zeendoc
+participant EBP
+end
+
+
+
 API->>BDD: recuperer données de connexion
 BDD->>API: données de connexion
 API->>Zeendoc: connexion
