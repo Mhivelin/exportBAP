@@ -131,3 +131,32 @@ CREATE TABLE CLASSEUR(
 | id_classeur       | identifiant du classeur (tout les classeurs avec un index BAP sont ajoutés) |
 | index_BAP         | id de l'index BAP (custom_XX)                                               |
 
+
+
+## programme
+### fonctionnement
+- récupère les données de connexion de la base de données
+- récupère les données des classeurs de Zeendoc
+- *envoie les données a ebp*
+- confirme l'export sur Zeendoc
+
+### classes
+#### Zeendoc
+> permet de se connecter au webservices de Zeendoc, de récupérer les données des classeurs et de les modifier
+
+##### attributs
+| attribut         | type        | visibilité | description               |
+| ---------------- | ----------- | ---------- | ------------------------- |
+| wsdl             | string      | private    | url du wsdl de Zeendoc    |
+| service_location | string      | private    | url du service de Zeendoc |
+| service_uri      | string      | private    | url du service de Zeendoc |
+| client           | object SOAP | private    | client SOAP               |
+
+##### méthodes (seulement les méthodes utiles)
+| méthode        | visibilité | description                                                               |
+| -------------- | ---------- | ------------------------------------------------------------------------- |
+| __construct()  | public     | constructeur de la classe intialisant                                     |
+| connect()      | public     | permet de se connecter au client SOAP                                     |
+| getDocument()  | private    | permet de récupérer les documents selon les paramètres                    |
+| getRights()    | private    | permet de récupérer les droits utilisateur                                |
+| getClassList() | public     | permet de récupérer la liste des classeurs disponibles pour l'utilisateur |

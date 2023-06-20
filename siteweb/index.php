@@ -110,8 +110,8 @@ require_once('../classes/Zeendoc.php');
                     <td>
                         <ul>
                             <?php
-                                $classeurs = $bdd->query('SELECT * FROM CLASSEUR WHERE id_client = ' . $donnees['id_client']);
-                                $classeurs = $classeurs->fetchAll();
+                                $classeurs = $zeendoc->getIndexBAP();
+
 
 
                                 ?>
@@ -127,9 +127,9 @@ require_once('../classes/Zeendoc.php');
                                     <?php
                                         foreach ($classeurs as $classeur) {
                                             echo '<tr>';
-                                            echo '<td>' . $classeur['id_classeur'] . '</td>';
-                                            echo '<td>' . $classeur['index_BAP'] . '</td>';
-                                            echo '<td>' . $zeendoc->getNbBAPDoc($classeur['id_classeur'], $classeur['index_BAP']) . '</td>';
+                                            echo '<td>' . $classeur['Coll_Id'] . '</td>';
+                                            echo '<td>' . $classeur['Index_Id'] . '</td>';
+                                            echo '<td>' . $zeendoc->getNbBAPDoc($classeur['Coll_Id'], $classeur['Index_Id']) . '</td>';
                                             echo '</tr>';
                                         }
                                         ?>
@@ -157,7 +157,37 @@ require_once('../classes/Zeendoc.php');
         </table>
 
         <h3>Export des BAP : </h3>
-        <!-- boutton qui lance declanchement.php en arriere plan avec curl -->
-        <form method="post" action="../declanchement.php">
-            <button class=" btn btn-lg btn-primary btn-block" type="submit">export</button>
+        <!-- boutton qui lance declanchement.php sans changer de page -->
+        <form id="export-form" method="post" action="../declanchement.php">
+            <button class="btn btn-lg btn-primary btn-block" type="submit">exporter</button>
         </form>
+
+
+    </div>
+</body>
+<script>
+// -----------ajax pour l'export des BAP---------------- //
+document.getElementById("export-form").addEventListener("submit", function(event) {
+    event.preventDefault(); // Empêche la soumission normale du formulaire
+
+    // Effectue une requête AJAX
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "../declanchement.php", true);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                // La requête AJAX a été exécutée avec succès
+                // Vous pouvez effectuer des actions supplémentaires ici si nécessaire
+                console.log("Export effectué !");
+            } else {
+                // Une erreur s'est produite lors de la requête AJAX
+                console.error("Erreur lors de l'export !");
+            }
+        }
+    };
+    xhr.send();
+});
+</script>
+
+
+</html>

@@ -1,20 +1,33 @@
 <?php
+
+/**
+ * Classe ZeenDoc
+ */
 class ZeenDoc
 {
-    public $wsdl;               // URL du fichier WSDL
-    public $service_location;   // URL de l'emplacement du service
-    public $service_uri;        // URI du service
+    private $wsdl;               // URL du fichier WSDL
+    private $service_location;   // URL de l'emplacement du service
+    private $service_uri;        // URI du service
     public $client;             // Client SOAP
-    public $result;             // Résultat du client
 
-    public function __construct($UrlClient = "deltic_demo")
+    /**
+     * Constructeur de la classe ZeenDoc
+     * @param string $UrlClient - URL du client
+     */
+    public function __construct(string $UrlClient = "deltic_demo")
     {
         $this->wsdl = "https://armoires.zeendoc.com/" . $UrlClient . "/ws/3_0/wsdl.php?WSDL";
         $this->service_location = "https://armoires.zeendoc.com/" . $UrlClient . "/ws/3_0/Zeendoc.php";
         $this->service_uri = "https://armoires.zeendoc.com/" . $UrlClient . "/ws/3_0/";
     }
 
-    public function connect($userLogin, $userCPassword)
+    /**
+     * Connecte l'utilisateur au service ZeenDoc
+     * @param string $userLogin - Nom d'utilisateur
+     * @param string $userCPassword - Mot de passe de l'utilisateur
+     * @return mixed - Résultat de la connexion ou une exception SoapFault en cas d'erreur
+     */
+    public function connect(string $userLogin, string $userCPassword)
     {
         ini_set('soap.wsdl_cache_enabled', "0");
 
@@ -42,14 +55,18 @@ class ZeenDoc
             if (isset($result->Error_Msg)) {
                 echo "<div class='alert alert-danger' role='alert'>Erreur : " . $result->Error_Msg . "</div>";
             } else {
-                return $result;
             }
         } catch (SoapFault $fault) {
             return $fault;
         }
     }
 
-    public function getNBDocument($collId)
+    /**
+     * Récupère le nombre de documents dans un classeur spécifié
+     * @param string $collId - Identifiant de la collection
+     * @return mixed - Résultat de la requête ou une exception SoapFault en cas d'erreur
+     */
+    public function getNBDocument(string $collId)
     {
         // fonction qui permet de récupérer le nombre de document d'une collection
 
@@ -75,9 +92,16 @@ class ZeenDoc
         }
     }
 
-    public function getDocument($collId, $resId)
+    /**
+     * Récupère les documents d'un classeur spécifié
+     * @param string $collId - Identifiant de la collection
+     * @param string $resId - Identifiant du document
+     * @param string $Wanted_Columns - Colonnes souhaitées
+     * @return mixed - Résultat de la requête ou une exception SoapFault en cas d'erreur
+     */
+    public function getDocument($collId, $resId, $Wanted_Columns = 'filename')
     {
-        $Wanted_Columns = 'Filename;custom_n7';
+
         // fonction qui permet de récupérer les documents d'une collection
         // champs souhaités : Code journal;Date;N° de compte;Compte auxiliaire;Pièce;Document;Libellé;Débit;Crédit;Date de l'échéance;Moyen de paiement;N° de ligne pour les documents associés;Documents associés;N° de ligne pour les ventilations analytiques;Plan analytique;Poste analytique;Montant de la ventilation analytique;Notes;Intitulé du compte;Information libre 1;
         // champs souhaités (custom) : 
@@ -243,11 +267,12 @@ class ZeenDoc
             array(
                 'Id' => 10,
                 'Label' => $indexCustom,
-                'Value' => 1
+                'Value' => 1,
+                'Operator' => 'EQUAL'
             )
         );
 
-        $wantedColumns = 'filename;' . $indexCustom;
+        $wantedColumns = 'filename;res_id;' . $indexCustom;
 
 
         $res = $this->searchDoc($coll_Id, $indexList, $wantedColumns);
@@ -257,7 +282,20 @@ class ZeenDoc
         $res = json_decode($res, true);
         $docs = $res['Document'];
 
-        return $docs;
+        //-------------------------------------------------------------------------------------
+        // provisoire
+        //-------------------------------------------------------------------------------------
+        $resultat = array();
+        foreach ($docs as $doc) {
+            $document = $this->getDocument($coll_Id, $doc['Res_Id'], $wantedColumns);
+            $document = json_decode($document, true);
+
+            if ($document['Document']['Indexes'][$indexCustom][0] == 1) {
+                $resultat[] = $document;
+            }
+        }
+
+        return $resultat;
     }
 
 
