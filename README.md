@@ -8,20 +8,33 @@ graph TD;
    A[BAP]-->B(l'utilisateur existe-t-il dans la base de données ?);
    B-->|oui|C[passer l'index BAP à 'OK'];
    B-->|non|D[ajout de l'utilisateur sur le site web];
-   C-->| zeendoc |E[bouton d'export]
-   C-->| site web |F[bouton d'export]
-   D-->C
-   E-->G[execution de declanchement.php]
-   F-->G
+   C-->| zeendoc |E[bouton d'export];
+   C-->| site web |F[bouton d'export];
+   D-->C;
+   E-->G[execution de declanchement.php];
+   F-->G;
+
+   
 
 ```
+<br>
 
+## diagramme d'utilisation
 
+```mermaid
+sequenceDiagram
+API->>BDD: recuperer données de connexion
+BDD->>API: données de connexion
+API->>Zeendoc: connexion
+API->>Zeendoc: récupérer les classeurs
+Zeendoc->>API: classeurs
+API->>Zeendoc: récupérer des documents
+Zeendoc->>API: documents
+API->>EBP: envoyer les données
+EBP->>API: confirmation de l'envoi
+API->>Zeendoc: confirmer l'export
 
-
-
-
-
+```
 
 
 ## installation
@@ -132,7 +145,7 @@ http://localhost/exportBAPDELTIC/site_web/index.php
 
 ### sql
 
-### clients
+#### clients
 
 ```sql
 CREATE TABLE CLIENT(
@@ -142,15 +155,6 @@ CREATE TABLE CLIENT(
    mot_de_passe VARCHAR(50),
    PRIMARY KEY(id_client)
 );
-
-CREATE TABLE CLASSEUR(
-   id_classeur VARCHAR(9),
-   index_BAP VARCHAR(7),
-   id_client TINYINT NOT NULL,
-   PRIMARY KEY(id_classeur),
-   FOREIGN KEY(id_client) REFERENCES CLIENT(id_client)
-);
-
 ```
 
 ### requêtes
