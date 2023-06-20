@@ -147,20 +147,25 @@ class ZeenDoc
         //fonction qui permet de récupérer la liste des index BAP
         $result = $this->getRights();
 
-        $result = $result['Collections'];
+        $result = $result['Collections']/*['Index']*/;
+
+
 
         $indexBAP = array();
         foreach ($result as $classeur) {
-            foreach ($classeur['Index'] as $index) {
-                if ($index['Label'] == 'BAP') {
-                    $indexBAP[] = [
-                        'Coll_Id' => $classeur['Coll_Id'],
-                        'Index_Id' => $index['Index_Id'],
+            if (isset($classeur['Index'])) {
+                foreach ($classeur['Index'] as $index) {
+                    if ($index['Label'] == 'BAP') {
+                        $indexBAP[] = [
+                            'Coll_Id' => $classeur['Coll_Id'],
+                            'Index_Id' => $index['Index_Id'],
 
-                    ];
+                        ];
+                    }
                 }
             }
         }
+
 
 
 
@@ -171,39 +176,9 @@ class ZeenDoc
     public function getNbBAPDoc($collId, $indexCustom)
 
     {
-        // fonction qui permet de récupérer le nombre de document BAP à exporter
-        $indexList = array(
-            array(
-                'Id' => 1,
-                'Label' => $indexCustom,
-                'Value' => 1
-            )
-        );
 
-
-
-        // Appel de la méthode 'getNbDoc' du service SOAP
-        $result = $this->client->__soapCall(
-            'getNbDoc',
-            array(
-                'Coll_Id' => $collId,                                           // Identifiant de la collection
-                'IndexList' => $indexList,                                      // recherche sur l'index BAP
-                'StrictMode' => new SoapParam('', 'StrictMode'),                // Mode strict désactivé
-                'Fuzzy' => new SoapParam('', 'Fuzzy'),                          // Recherche floue désactivée
-                'Order_Col' => new SoapParam('', 'Order_Col'),                  // Aucune colonne de tri spécifiée
-                'Order' => new SoapParam('', 'Order'),                          // Ordre de tri par défaut
-                'Saved_Query_Id' => new SoapParam(240, 'Saved_Query_Id'),       // Identifiant de la requête sauvegardée non spécifié
-                'Query_Operator' => new SoapParam('', 'Query_Operator')         // Opérateur de requête par défaut
-            )
-        );
-
-
-        if (isset($result->Error_Msg)) {
-            echo "<div class='alert alert-danger' role='alert'>Erreur : " . $result->Error_Msg . "</div>";
-        } else {
-            $result = json_decode($result, true);
-            return $result;
-        }
+        $liste_doc = $this->searchBAPDoc($collId, $indexCustom);
+        return count($liste_doc);
     }
 
 
@@ -212,6 +187,7 @@ class ZeenDoc
 
     private function searchDoc($collId, $indexList, $wantedColumns, $strictMode = 1, $orderCol = '', $order = '', $savedQueryId = '', $savedQueryName = '', $queryOperator = '', $from = '', $nbResults = '', $value1 = '', $makeUrlIndependentFromWebClientIP = '')
     {
+
         $param = array(
             'Coll_Id' => $collId,                       // Identifiant de la collection
             'IndexList' => $indexList,                  // Liste d'index
@@ -233,6 +209,9 @@ class ZeenDoc
             'searchDoc',
             $param
         );
+
+
+
 
 
         if (isset($result->Error_Msg)) {
@@ -257,20 +236,22 @@ class ZeenDoc
 
 
 
-    public function searchBAPDoc($Coll_Id)
+    public function searchBAPDoc($coll_Id, $indexCustom)
     {
 
         $indexList = array(
             array(
-                'Id' => 1,
-                'Label' => 'custom_n7',
+                'Id' => 10,
+                'Label' => $indexCustom,
                 'Value' => 1
             )
         );
-        $wantedColumns = 'custom_n7';
+
+        $wantedColumns = 'filename;' . $indexCustom;
 
 
-        $res = $this->searchDoc($Coll_Id, $indexList, $wantedColumns);
+        $res = $this->searchDoc($coll_Id, $indexList, $wantedColumns);
+
 
 
         $res = json_decode($res, true);
@@ -306,12 +287,12 @@ class ZeenDoc
         }
     }
 
-    public function changeBAP($collId, $resId)
+    public function changeBAP($collId, $resId, $indexCustom)
     {
         $indexList = array(
             array(
                 'Id' => 1,
-                'Label' => 'custom_n7',
+                'Label' => $indexCustom,
                 'Value' => 2
             )
         );
@@ -319,22 +300,7 @@ class ZeenDoc
         return $this->updateDoc($collId, $resId, $indexList);
     }
 
-    public function changeAllBAP($collList)
-    {
 
-        foreach ($collList as $coll) {
-            try {
-                $docs = $this->searchBAPDoc($coll);
-
-                foreach ($docs as $doc) {
-                    $this->changeBAP($coll, $doc['Res_Id']);
-                    echo "doc : " . $doc['Res_Id'] . " classeur : " . $coll . "<br>";
-                }
-            } catch (Exception $e) {
-                // on passe
-            }
-        }
-    }
 
     public function getSavedQueries($collId, $getNbResults = 1)
     {

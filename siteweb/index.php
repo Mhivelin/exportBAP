@@ -96,8 +96,12 @@ require_once('../classes/Zeendoc.php');
 
 
                 foreach ($req as $donnees) {
+
                     $zeendoc = new Zeendoc($donnees['url_client']);
                     $co = $zeendoc->connect($donnees['login'], $donnees['mot_de_passe']);
+
+
+
                 ?>
                 <tr>
                     <td><?php echo $donnees['url_client']; ?></td>
@@ -107,6 +111,9 @@ require_once('../classes/Zeendoc.php');
                         <ul>
                             <?php
                                 $classeurs = $bdd->query('SELECT * FROM CLASSEUR WHERE id_client = ' . $donnees['id_client']);
+                                $classeurs = $classeurs->fetchAll();
+
+
                                 ?>
                             <table class="table table table-sm align-middle">
                                 <thead>
@@ -123,6 +130,7 @@ require_once('../classes/Zeendoc.php');
                                             echo '<td>' . $classeur['id_classeur'] . '</td>';
                                             echo '<td>' . $classeur['index_BAP'] . '</td>';
                                             echo '<td>' . $zeendoc->getNbBAPDoc($classeur['id_classeur'], $classeur['index_BAP']) . '</td>';
+                                            echo '</tr>';
                                         }
                                         ?>
 
