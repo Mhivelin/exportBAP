@@ -1,6 +1,23 @@
 # exportBAP
 export de BAP de Zeendoc vers ebp
 
+## schéma d'utilisation
+
+```mermaid
+graph TD;
+   A-->B;
+   B-->C;
+   C-->D;
+```
+
+
+
+
+
+
+
+
+
 ## installation
 
 ### prérequis
@@ -36,8 +53,30 @@ sudo apt install git
 ```bash
 git clone https://github.com/Mhivelin/exportBAPDELTIC.git
 ```
+  - si github n'est pas installé :
+   ```bash
+   sudo apt install git
+   ```
+
 
 - créer la base de données
+```bash
+sudo service mariadb start
+#########pas encore fait #########
+# mysql -u root -p < exportBAPDELTIC/sql/creation.sql 
+
+```
+
+- demarrer le serveur web
+```bash
+sudo service apache2 start
+```
+
+- pour accéder au site web
+```bash
+http://localhost/exportBAPDELTIC/site_web/index.php
+```
+
 
 
 
@@ -160,3 +199,4 @@ CREATE TABLE CLASSEUR(
 | getDocument()  | private    | permet de récupérer les documents selon les paramètres                    |
 | getRights()    | private    | permet de récupérer les droits utilisateur                                |
 | getClassList() | public     | permet de récupérer la liste des classeurs disponibles pour l'utilisateur |
+| getIndexBAP()  | public     | permet de récupérer la liste des                                          |
