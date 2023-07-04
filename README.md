@@ -135,7 +135,7 @@ http://localhost/exportBAPDELTIC/site_web/index.php
 
 
 
-
+a faire : lien requete export/ classeur
 
 ## base de données
 
@@ -143,21 +143,13 @@ http://localhost/exportBAPDELTIC/site_web/index.php
 
 #### clients
 
-| colonne      | type         | description            |
-| ------------ | ------------ | ---------------------- |
-| id_client    | TINYINT      | identifiant du client  |
-| url_client   | VARCHAR(255) | url du client          |
-| login        | VARCHAR(50)  | login du client        |
-| mot_de_passe | VARCHAR(50)  | mot de passe du client |
-
-#### classeurs
-
-| colonne     | type       | description             |
-| ----------- | ---------- | ----------------------- |
-| id_classeur | VARCHAR(9) | identifiant du classeur |
-| index_BAP   | VARCHAR(7) | index du classeur       |
-| id_client   | TINYINT    | identifiant du client   |
-
+| colonne      | type         | description                  |
+| ------------ | ------------ | ---------------------------- |
+| id_client    | TINYINT      | identifiant du client        |
+| url_client   | VARCHAR(255) | url du client                |
+| login        | VARCHAR(50)  | login du client              |
+| mot_de_passe | VARCHAR(50)  | mot de passe du client       |
+| logiciel     | VARCHAR(50)  | logiciel comptable du client |
 
 
 
@@ -177,6 +169,13 @@ CREATE TABLE CLIENT(
    PRIMARY KEY(id_client)
 );
 ```
+
+#### ajout de logiciel dans la table clients
+
+```sql
+ALTER TABLE CLIENT ADD logiciel VARCHAR(50);
+```
+
 
 ### requêtes
 
@@ -223,11 +222,26 @@ CREATE TABLE CLIENT(
 | client           | object SOAP | private    | client SOAP               |
 
 ##### méthodes (seulement les méthodes utiles)
-| méthode        | visibilité | description                                                               |
-| -------------- | ---------- | ------------------------------------------------------------------------- |
-| __construct()  | public     | constructeur de la classe intialisant                                     |
-| connect()      | public     | permet de se connecter au client SOAP                                     |
-| getDocument()  | private    | permet de récupérer les documents selon les paramètres                    |
-| getRights()    | private    | permet de récupérer les droits utilisateur                                |
-| getClassList() | public     | permet de récupérer la liste des classeurs disponibles pour l'utilisateur |
-| getIndexBAP()  | public     | permet de récupérer la liste des                                          |
+| méthode        | visibilité | description                                                               | arguments                        | exemple d'arguments     |
+| -------------- | ---------- | ------------------------------------------------------------------------- | -------------------------------- | ----------------------- |
+| __construct()  | public     | constructeur de la classe intialisant                                     | string $UrlClient                | deltic_demo             |
+| connect()      | public     | permet de se connecter au client SOAP                                     | string $userLogin, $userPassword | deltic_demo, motdepasse |
+| getDocument()  | private    | permet de récupérer les documents selon les paramètres                    | $collId, $resId, $Wanted_Columns |                         |
+| getRights()    | private    | permet de récupérer les droits utilisateur                                |                                  |                         |
+| getClassList() | public     | permet de récupérer la liste des classeurs disponibles pour l'utilisateur |                                  |                         |
+| getIndexBAP()  | public     | permet de récupérer la liste des classeurs avec un index BAP et leur id   |                                  |                         |
+| getNbBAPDoc()  | public     | permet de récupérer le nombre de documents dans bon a payer               | $collId, $indexCustom            | coll_XX, custom_XX      |
+| searchDoc()    | private    | permet de récupérer les documents selon les paramètres                    | $collId, $resId, $Wanted_Columns |                         |
+| searchAllDoc() | public     | permet de récupérer tous les documents                                    |                                  |                         |
+| searchBAPDoc() | public     | permet de récupérer les documents dans bon a payer d'un classeur          | $coll_Id, $indexCustom           | coll_XX, custom_XX      |
+| updateDoc()    | private    | permet de modifier les documents                                          | $collId, $resId, $indexList      |                         |
+| changeBAP()    | public     | permet de modifier l'index BAP d'un document à 2 (exporté)                | $collId, $resId, $indexCustom    | coll_XX, 1, custom_XX   |
+
+
+
+#### EBP
+> permet de se connecter au webservices d'EBP et d'envoyer les données
+
+##### attributs
+| attribut | type | visibilité | description |
+| -------- | ---- | ---------- | ----------- |

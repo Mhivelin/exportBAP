@@ -26,36 +26,21 @@ if (isset($_POST['url']) && isset($_POST['login']) && isset($_POST['password']))
             $url = $_POST['url'];
             $login = $_POST['login'];
             $password = $_POST['password'];
+            $logiciel = $_POST['logiciel'];
 
 
 
-            $req = $bdd->prepare('INSERT INTO CLIENT(url_client, login, mot_de_passe) VALUES(:url_client, :login, :mot_de_passe)');
+            $req = $bdd->prepare('INSERT INTO CLIENT(url_client, login, mot_de_passe, logiciel) VALUES(:url_client, :login, :mot_de_passe, :logiciel)');
             $req->execute(array(
                 'url_client' => $url,
                 'login' => $login,
-                'mot_de_passe' => $password
+                'mot_de_passe' => $password,
+                'logiciel' => $logiciel
             ));
 
 
-            // récupération des classeurs qui ont un index BAP
-            $liste_classeur_BAP = $zeendoc->getIndexBAP();
 
-            // récupération de l'id du client ajouté
-            $id_client = $bdd->lastInsertId();
 
-            foreach ($liste_classeur_BAP as $classeur) {
-
-                $Coll_Id = $classeur['Coll_Id'];
-                $Index_Id = $classeur['Index_Id'];
-
-                // on ajoute les classeurs dans la base de données
-                $req = $bdd->prepare('INSERT INTO CLASSEUR(id_classeur, index_BAP, id_client) VALUES(:id_classeur, :index_BAP, :id_client)');
-                $req->execute(array(
-                    'id_classeur' => $Coll_Id,
-                    'index_BAP' => $Index_Id,
-                    'id_client' => $id_client
-                ));
-            }
 
 
             header('Location: ../index.php?message=ajouté');

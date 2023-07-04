@@ -14,7 +14,7 @@ class ZeenDoc
      * Constructeur de la classe ZeenDoc
      * @param string $UrlClient - URL du client
      */
-    public function __construct(string $UrlClient = "deltic_demo")
+    public function __construct(string $UrlClient)
     {
         $this->wsdl = "https://armoires.zeendoc.com/" . $UrlClient . "/ws/3_0/wsdl.php?WSDL";
         $this->service_location = "https://armoires.zeendoc.com/" . $UrlClient . "/ws/3_0/Zeendoc.php";
@@ -100,7 +100,7 @@ class ZeenDoc
      * @param string $Wanted_Columns - Colonnes souhaitées
      * @return mixed - Résultat de la requête ou une exception SoapFault en cas d'erreur
      */
-    private function getDocument($collId, $resId, $Wanted_Columns = 'filename')
+    public function getDocument($collId, $resId, $Wanted_Columns = 'filename')
     {
 
         // fonction qui permet de récupérer les documents d'une collection
@@ -282,8 +282,11 @@ class ZeenDoc
             $document = $this->getDocument($coll_Id, $doc['Res_Id'], $wantedColumns);
             $document = json_decode($document, true);
 
-            if ($document['Document']['Indexes'][$indexCustom][0] == 1) {
-                $resultat[] = $document;
+
+            if (isset($document['Document']['Indexes'][$indexCustom])) {
+                if ($document['Document']['Indexes'][$indexCustom][0] == 1) {
+                    $resultat[] = $document;
+                }
             }
         }
 
