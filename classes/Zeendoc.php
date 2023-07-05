@@ -125,7 +125,7 @@ class ZeenDoc
         }
     }
 
-    private function getRights()
+    public function getRights()
     {
         // fonction qui permet de récupérer toutes les informations de l'utilisateur connecté
         $result = $this->client->__soapCall(
@@ -250,6 +250,16 @@ class ZeenDoc
         return $this->searchDoc($collId, $indexList, $wantedColumns);
     }
 
+    public function searchDocByColl($collId)
+    {
+
+        $indexList = array();
+        $wantedColumns = 'filename';
+
+        // Appeler la méthode searchDoc avec les paramètres de recherche
+        return $this->searchDoc($collId, $indexList, $wantedColumns);
+    }
+
 
 
     public function searchBAPDoc($coll_Id, $indexCustom)
@@ -348,5 +358,27 @@ class ZeenDoc
         );
 
         return $result;
+    }
+
+
+    public function getDocSelly($coll_Id)
+    {
+        $result = $this->getRights();
+
+        $result = $result['Collections'];
+
+        foreach ($result as $classeur) {
+            if ($classeur['Coll_Id'] == $coll_Id) {
+                foreach ($classeur['Index'] as $index) {
+
+                    $liste_index[] = [
+                        'Index_Id' => $index['Index_Id'],
+                        'Label' => $index['Label'],
+                    ];
+                }
+            }
+        }
+
+        return $liste_index;
     }
 }

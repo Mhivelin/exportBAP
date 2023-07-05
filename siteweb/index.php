@@ -1,14 +1,18 @@
 <?php
-// entete de toutes les pages
-
-// on demarre la session
-session_start();
 
 // connexion à la base de données
 require_once('requetesbdd/connect.php');
 
 // ajout des classes
 require_once('../classes/Zeendoc.php');
+
+// on verifie que l'utilisateur est connecté
+session_start();
+
+if (!isset($_SESSION['login']) && !isset($_SESSION['password'])) {
+    header('Location: SESSION/connection.php?erreur=2');
+    exit();
+}
 
 
 
@@ -282,10 +286,10 @@ require_once('../classes/Zeendoc.php');
                                             echo '<td>' . $zeendoc->getNbBAPDoc($classeur['Coll_Id'], $classeur['Index_Id']) . '</td>';
                                             $urlexport = '../requetesAPI/export.php?id=' . $classeur['Coll_Id'] . '&customIndex=' . $classeur['Index_Id'] . '&url=' . $donnees['url_client'];
                                         ?>
-                                    <!-- boutton qui lance declanchement.php sans changer de page -->
+                                    <!-- boutton qui lance declanchement.php -->
 
                                     <td>
-                                        <a href="<?php $urlexport ?>" class="btn btn-primary" title="exporter">
+                                        <a href="<?php echo $urlexport ?>" class="btn btn-primary">
                                             <svg stroke="currentColor" alt="export" fill="none" stroke-width="2"
                                                 viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"
                                                 class="h-4 w-4" height="1em" width="1em"

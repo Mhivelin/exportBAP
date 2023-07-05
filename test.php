@@ -1,20 +1,30 @@
 <?php
+/*
+$password = 'API-deltic123';
+$password = md5($password);
+echo $password;*/
 
-require_once('classes/Ebp.php');
+require_once 'classes/Zeendoc.php';
 
-// initialisation des variables
-$id_client = 'jupiterwithoutpkce';
-$clientSecret = '78f68eac-c4e2-4221-9836-d66db48a75f0';
-$redirectUri = 'http://192.168.75.154/exportBAPDELTIC/test.php';
-
-// création d'un objet EBP
-$ebp = new EBP($id_client, $clientSecret, $redirectUri);
-
-$ebp->getCode();
+require_once 'siteweb/requetesbdd/connect.php';
 
 
-var_dump($ebp->code);
+$req = $bdd->query('SELECT * FROM CLIENT');
 
-echo '<br><br>';
 
-$ebp->getAccessToken();
+foreach ($req as $donnees) {
+    $zeendoc = new Zeendoc($donnees['url_client']);
+    $co = $zeendoc->connect($donnees['login'], $donnees['mot_de_passe']);
+    $rights = $zeendoc->getRights();
+    $coll = $rights['Collections'];
+
+    foreach ($coll as $key => $value) {
+        $collList[] = $value['Coll_Id'];
+
+        $test = $zeendoc->getDocSelly($value['Coll_Id']);
+
+        foreach ($test as $key => $value) {
+            echo $value['Label'] . '<br>';
+        }
+    }
+}

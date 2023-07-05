@@ -71,8 +71,8 @@ class Sellsy
         $request = array(
             'method' => 'Purchase.create',
             'params' => array(
-                'purchase'  => array(
-                    'ident'     => $ident,
+                'purchase'  => array(                           // correspondances zeedoc
+                    'ident'     => $ident,                      // Identifier
                     'thirdid'   => $thirdID,
                     'doctype'   => $doctype
                 ),
