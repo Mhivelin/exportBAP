@@ -166,15 +166,12 @@ CREATE TABLE CLIENT(
    url_client VARCHAR(255) NOT NULL,
    login VARCHAR(50),
    mot_de_passe VARCHAR(50),
+   logiciel VARCHAR(50),
    PRIMARY KEY(id_client)
 );
 ```
 
-#### ajout de logiciel dans la table clients
 
-```sql
-ALTER TABLE CLIENT ADD logiciel VARCHAR(50);
-```
 
 
 ### requêtes

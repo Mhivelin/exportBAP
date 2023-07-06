@@ -284,7 +284,7 @@ if (!isset($_SESSION['login']) && !isset($_SESSION['password'])) {
                                             echo '<td>' . $classeur['Coll_Id'] . '</td>';
                                             echo '<td>' . $classeur['Index_Id'] . '</td>';
                                             echo '<td>' . $zeendoc->getNbBAPDoc($classeur['Coll_Id'], $classeur['Index_Id']) . '</td>';
-                                            $urlexport = '../requetesAPI/export.php?id=' . $classeur['Coll_Id'] . '&customIndex=' . $classeur['Index_Id'] . '&url=' . $donnees['url_client'];
+                                            $urlexport = 'http://54.38.32.241/exportBAPDELTIC/requetesAPI/export.php?id=' . $classeur['Coll_Id'] . '&customIndex=' . $classeur['Index_Id'] . '&url=' . $donnees['url_client'];
                                         ?>
                                     <!-- boutton qui lance declanchement.php -->
 
