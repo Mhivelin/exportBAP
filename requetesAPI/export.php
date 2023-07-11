@@ -5,6 +5,7 @@
 // initialisation des variables
 include('../siteweb/requetesbdd/connect.php');
 include('../classes/Zeendoc.php');
+include('../classes/Ebp.php');
 
 
 
@@ -33,6 +34,44 @@ $co = $zeendoc->connect($login, $password);
 $docs = $zeendoc->searchBAPDoc($id, $customIndex);
 
 // ------------------------- exportation des documents ------------------------- //
+
+// vers EBP //
+if ($donnees['logiciel'] == 'EBP') {
+    // création d'un objet EBP
+    $ebp = new EBP($donnees['id_client'], $donnees['clientSecret'], $donnees['redirectUri']);
+
+    // récupération du code d'autorisation
+    $code = $ebp->getCode();
+
+    // récupération du jeton d'accès
+    $accessToken = $ebp->getAccessToken();
+
+    // exportation des documents
+    foreach ($docs as $doc) {
+        $ebp->changeBAP($accessToken, $doc['Document']['Res_Id'], $customIndex);
+    }
+} else if ($donnees['logiciel'] == 'SAGE 100') {
+    // vers SAGE //
+    // création d'un objet SAGE
+    $sage = new SAGE($donnees['id_client'], $donnees['clientSecret'], $donnees['redirectUri']);
+
+    // récupération du code d'autorisation
+    $code = $sage->getCode();
+
+    // récupération du jeton d'accès
+    $accessToken = $sage->getAccessToken();
+
+    // exportation des documents
+    foreach ($docs as $doc) {
+        $sage->changeBAP($accessToken, $doc['Document']['Res_Id'], $customIndex);
+    }
+}
+
+
+
+
+
+
 
 // ----------------------------------------------------------------------------- //
 

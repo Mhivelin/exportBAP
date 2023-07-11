@@ -30,88 +30,73 @@ class EBP
     }
 
 
-
-
     /**
-     * Obtention du jeton d'accès
+     * Récupère le code d'autorisation
      *
-     * @return void
-     */
-    public function getAccessToken()
-    {
-        /* exemple de requête POST
-        Post	url : https://api-login.ebp.com/connect/token 
-        body (application/x-www-form-urlencoded): 
-            client_id={clientId}
-            &redirect_uri=https://localhost:3333/api/login/SigninRedirect
-            &grant_type=authorization_code
-            &code=swWZ-eNBDn8rpiTrvzuZVZ-ZwrdOplLPM6vaegaDOho
-        // Paramètres de la requête POST pour obtenir le jeton d'accès
-        */
-        $url = $this->tokenEndpoint;
-        $id_client = $this->id_client;
-        $clientSecret = $this->clientSecret;
-        $redirectUri = $this->redirectUri;
-        $grant_type = 'authorization_code';
-        $code = $this->code;
-
-        // création de la requête
-        $data = array(
-            'client_id' => $id_client,
-            'client_secret' => $clientSecret,
-            'redirect_uri' => $redirectUri,
-            'grant_type' => $grant_type,
-            'code' => $code
-        );
-
-        // création de la requête
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-
-        // récupération de la réponse
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $response = curl_exec($ch);
-        curl_close($ch);
-
-        var_dump($response);
-    }
-
-
-
-
-
-    /**
-     * obtention du code d'autorisation
-     * 
-     * @return void
+     * @return string
      */
     public function getCode()
     {
-        if (isset($_GET['code'])) {
-            $this->code = $_GET['code'];
-        } else {
+        $params = [
+            'client_id' => $this->id_client,
+            'response_type' => 'code',
+            'redirect_uri' => $this->redirectUri,
+            'scope' => 'openid profile',
+            'code_challenge_method' => 'S256',
+            'code_challenge' => $this->generateCodeVerifier()
+        ];
 
-            // initialisation des variables
-            $url = $this->authorizationEndpoint;
-            $id_client = $this->id_client;
-            $redirectUri = $this->redirectUri;
-            $scope = 'openid profile offline_access';
-            $state = '4e2a15864f564bd19375999c394baa01';
-            $response_mode = 'query';
-            $response_type = 'code';
+        $url = $this->authorizationEndpoint . '?' . http_build_query($params);
 
-            // création de la requête
-            $url .= '?client_id=' . $id_client;
-            $url .= '&redirect_uri=' . $redirectUri;
-            $url .= '&response_type=' . $response_type;
-            $url .= '&scope=' . $scope;
-            $url .= '&state=' . $state;
-            $url .= '&response_mode=' . $response_mode;
+        header('Location: ' . $url);
+        exit;
+    }
 
-            // redirection vers l'url
-            header('Location: ' . $url);
-            exit();
-        }
+    /**
+     * Récupère le jeton d'accès
+     *
+     * @return string
+     */
+    public function getAccessToken()
+    {
+        $this->code = $_GET['code'];
+
+        $data = [
+            'client_id' => $this->id_client,
+            'client_secret' => $this->clientSecret,
+            'grant_type' => 'authorization_code',
+            'code' => $this->code,
+            'code_verifier' => $_COOKIE['code_verifier'],
+            'redirect_uri' => $this->redirectUri
+        ];
+
+        $options = [
+            'http' => [
+                'header' => "Content-type: application/x-www-form-urlencoded\r\n",
+                'method' => 'POST',
+                'content' => http_build_query($data),
+            ],
+        ];
+
+        $context = stream_context_create($options);
+        $response = file_get_contents($this->tokenEndpoint, false, $context);
+        $token = json_decode($response, true);
+
+        $this->accessToken = $token['access_token'];
+        $this->refreshToken = $token['refresh_token'];
+
+        return $this->accessToken;
+    }
+
+    /**
+     * Génère un code aléatoire
+     *
+     * @return string
+     */
+    private function generateCodeVerifier()
+    {
+        $code_verifier = bin2hex(random_bytes(32));
+        setcookie('code_verifier', $code_verifier, time() + 3600);
+        return $code_verifier;
     }
 }

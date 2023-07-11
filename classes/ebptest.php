@@ -111,8 +111,9 @@ $url = 'https://api-login.ebp.com/connect/authorize' .
     '&code_challenge=' . $codeChallenge .
     '&code_challenge_method=S256';
 
-// Rediriger l'utilisateur vers l'URL
-header("Location: $url");
+// Faire la requete vers l'authentification
+header('Location: ' . $url);
+
 
 // Attendre le retour de l'authentification
 $code = waitForCallback();

@@ -94,6 +94,33 @@ if (!isset($_SESSION['login']) && !isset($_SESSION['password'])) {
 
             </select>
 
+            <!-- ebp -->
+            <div id="ebpform" class="form-group">
+                <label for="id_client">id client</label>
+                <input type="text" name="id_client" id="id_client" class="form-control" placeholder="id client"
+                    autofocus>
+                <label for="clientSecret">client secret</label>
+                <input type="text" name="clientSecret" id="clientSecret" class="form-control"
+                    placeholder="client secret" autofocus>
+                <label for="redirectUri">redirect uri</label>
+                <input type="text" name="redirectUri" id="redirectUri" class="form-control" placeholder="redirect uri"
+                    autofocus>
+            </div>
+
+            <!-- sage -->
+            <div id="sageform" class="form-group">
+                <label for="id_client">id client</label>
+                <input type="text" name="id_client" id="id_client" class="form-control" placeholder="id client"
+                    autofocus>
+                <label for="clientSecret">client secret</label>
+                <input type="text" name="clientSecret" id="clientSecret" class="form-control"
+                    placeholder="client secret" autofocus>
+                <label for="redirectUri">redirect uri</label>
+                <input type="text" name="redirectUri" id="redirectUri" class="form-control" placeholder="redirect uri"
+                    autofocus>
+            </div>
+
+
             <br>
 
             <button class=" btn btn-lg btn-primary btn-block" type="submit">ajouter</button>
@@ -325,6 +352,7 @@ if (!isset($_SESSION['login']) && !isset($_SESSION['password'])) {
                 ?>
 
             </tbody>
+
         </table>
 
         </td>
@@ -353,6 +381,7 @@ if (!isset($_SESSION['login']) && !isset($_SESSION['password'])) {
 
     ?>
         </tbody>
+
         </table>
 
 
@@ -382,6 +411,28 @@ if (!isset($_SESSION['login']) && !isset($_SESSION['password'])) {
     var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl)
     })
+
+    // -----------affichage du formulaire d'ajout de source---------------- //
+    var logiciel = document.getElementById('logiciel');
+    var ebpform = document.getElementById('ebpform');
+    var sageform = document.getElementById('sageform');
+
+    ebpform.style.display = 'none';
+    sageform.style.display = 'none';
+
+
+    logiciel.addEventListener('change', function() {
+        if (logiciel.value == 'EBP') {
+            ebpform.style.display = 'block';
+            sageform.style.display = 'none';
+        } else if (logiciel.value == 'SAGE') {
+            sageform.style.display = 'block';
+            ebpform.style.display = 'none';
+        } else {
+            ebpform.style.display = 'none';
+            sageform.style.display = 'none';
+        }
+    });
     </script>
 
 
